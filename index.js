@@ -1,0 +1,9 @@
+function donateXRP()
+{
+
+}
+
+function donateSolana()
+{
+
+}
