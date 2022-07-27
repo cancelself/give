@@ -1,0 +1,23 @@
+{
+  "name": "meditate2donate",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cancelself/meditate2donate.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cancelself/meditate2donate/issues"
+  },
+  "homepage": "https://github.com/cancelself/meditate2donate#readme",
+  "dependencies": {
+    "readline": "^1.3.0",
+    "xrpl": "^2.3.1"
+  }
+}
