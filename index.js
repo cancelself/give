@@ -10,60 +10,52 @@ const rl = read.createInterface({
   rl.on('line', (line) => {
     
     const command = line.toLowerCase().trim()
-    line.su
-
+    
     switch(command) 
     {
       case "xrp":
+        donateXRP();
         break;
+
         default:
-          break;
+          break; //xrp //sol 
     }
-    console.log(command)
-    const xrpl = require("xrpl");
-    const client = new xrpl.Client("wss://xrplcluster.com");
-    client.connect();
-    const secret = "";
-    const destination = "rDsbeomae4FXwgQTJp9Rs64Qg9vDiTCdBv";
-    const wallet = xrpl.Wallet.fromSeed(secret);
-    console.log(wallet.address);
 
   });
 
 async function donateXRP()
 {
+  const xrpl = require("xrpl");
+  const client = new xrpl.Client("wss://xrplcluster.com");
+
+  client.connect();
+
+  const secret = "";
+  const destination = "rDsbeomae4FXwgQTJp9Rs64Qg9vDiTCdBv";
+
+  const wallet = xrpl.Wallet.fromSeed(secret);
+  console.log(wallet.address);
+
+  const transaction = client.autofill(
+  {
+        "TransactionType": "Payment",
+        "Account": wallet.address,
+        //"LastLedgerSequence": client.getLedgerIndex() + 75, 
+        "Amount": 1600,
+        "Destination": destination
+  });
+
+  const tx = client.submitAndWait(transaction, { wallet: wallet });
+  console.log(tx);
+        
+  client.disconnect();
 
 }
 
-
-
-    /*const transaction = client.autofill(
-        {
-            "TransactionType": "Payment",
-            "Account": wallet.address,
-            //"LastLedgerSequence": client.getLedgerIndex() + 75, 
-            "Amount": 1600,
-            "Destination": destination
-            });
-
-      */
-     
-            const transaction = {
-                "TransactionType": "Payment",
-                "Account": wallet.address,
-                //"LastLedgerSequence": client.getLedgerIndex() + 75, 
-                "Amount": 1600,
-                "Destination": destination
-            }
-        
-        const tx = client.submitAndWait(transaction, { wallet: wallet });
-        console.log(tx);
-        
-        //client.disconnect();
-
-
-
-
+async function donateSol()
+{
+  
+}
 
 
    
