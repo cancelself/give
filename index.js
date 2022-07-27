@@ -16,9 +16,11 @@ const rl = read.createInterface({
       case "xrp":
         donateXRP();
         break;
-
+      case "sol":
+        donateSol();
+        break;
         default:
-          break; //xrp //sol 
+          break; //options: //xrp //sol 
     }
 
   });
@@ -26,29 +28,36 @@ const rl = read.createInterface({
 async function donateXRP()
 {
   const xrpl = require("xrpl");
+  
   const client = new xrpl.Client("wss://xrplcluster.com");
 
-  client.connect();
+  await client.connect()
 
   const secret = "";
-  const destination = "rDsbeomae4FXwgQTJp9Rs64Qg9vDiTCdBv";
+  const account = "rLLSeASKDRhyPJoLpXFJV3MEVJCThtWLqC"
+  const destination = "XV3oNHx95sqdCkTDCBCVsVeuBmvh2ep8mXLvLVPgbsYPxS6";
 
   const wallet = xrpl.Wallet.fromSeed(secret);
+  
   console.log(wallet.address);
-
-  const transaction = client.autofill(
+  
+  console.log(await client.getXrpBalance(account));
+       
+  const transaction = await client.autofill(
   {
         "TransactionType": "Payment",
-        "Account": wallet.address,
-        //"LastLedgerSequence": client.getLedgerIndex() + 75, 
-        "Amount": 1600,
+        "Account": account,
+        "Amount": "1600", 
         "Destination": destination
   });
 
-  const tx = client.submitAndWait(transaction, { wallet: wallet });
+  console.log(transaction);
+
+  const tx = await client.submitAndWait(transaction, { wallet: wallet });
+  
   console.log(tx);
         
-  client.disconnect();
+  await client.disconnect();
 
 }
 
