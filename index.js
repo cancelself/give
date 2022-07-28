@@ -1,5 +1,3 @@
-console.log("meditate2donate");
-
 const read = require('readline');
 
 const rl = read.createInterface({
@@ -63,7 +61,34 @@ async function donateXRP()
 
 async function donateSol()
 {
-  
+
+  const {sendAndConfirmTransaction, Connection, Keypair, Transaction, SystemProgram, LAMPORTS_PER_SOL} = require("@solana/web3.js");
+
+  const fromKeypair = Keypair.generate();
+  const toKeypair = Keypair.generate();
+
+  const connection = new Connection(
+    "https://api.devnet.solana.com",
+    "confirmed"
+  );
+
+  const airdropSignature = await connection.requestAirdrop(
+    fromKeypair.publicKey,
+    LAMPORTS_PER_SOL
+  );
+  const lamportsToSend = 1_000_000;
+
+  const transferTransaction = new Transaction().add(
+    SystemProgram.transfer({
+      fromPubkey: fromKeypair.publicKey,
+      toPubkey: toKeypair.publicKey,
+      lamports: lamportsToSend,
+    })
+  );
+
+  await sendAndConfirmTransaction(connection, transferTransaction, [
+    fromKeypair,
+  ]);
 }
 
 
