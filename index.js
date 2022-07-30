@@ -11,17 +11,39 @@ const rl = read.createInterface({
     
     switch(command) 
     {
-      case "xrp":
+      case "!xrp":
         donateXRP();
         break;
-      case "sol":
-        donateSol();
+      
+        case "?sol":
+        testSol();
         break;
+
+        case("=gd"):
+          gd_balance();
+          break;
+
         default:
           break; //options: //xrp //sol 
     }
 
   });
+
+  async function gd_balance() {
+
+    const {clusterApiUrl, Connection, Keypair, Transaction, SystemProgram, LAMPORTS_PER_SOL, PublicKey} = require("@solana/web3.js");
+ 
+    const giveDirectly = new PublicKey("pWvDXKu6CpbKKvKQkZvDA66hgsTB6X2AgFxksYogHLV")
+    
+    console.log(giveDirectly)
+    
+    let connection = new Connection(clusterApiUrl('mainnet-beta'), 'confirmed');
+
+    let balance = await connection.getBalance(giveDirectly);
+  
+    console.log(giveDirectly + ":" + balance)
+
+  }
 
 async function donateXRP()
 {
@@ -59,24 +81,34 @@ async function donateXRP()
 
 }
 
-async function donateSol()
+async function testSol()
 {
-
-  const {sendAndConfirmTransaction, Connection, Keypair, Transaction, SystemProgram, LAMPORTS_PER_SOL} = require("@solana/web3.js");
+  const {sendAndConfirmTransaction, clusterApiUrl, Connection, Keypair, Transaction, SystemProgram, LAMPORTS_PER_SOL} = require("@solana/web3.js");
 
   const fromKeypair = Keypair.generate();
   const toKeypair = Keypair.generate();
 
-  const connection = new Connection(
-    "https://api.devnet.solana.com",
-    "confirmed"
-  );
+  let connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
 
-  const airdropSignature = await connection.requestAirdrop(
+  let airdropSignature = await connection.requestAirdrop(
     fromKeypair.publicKey,
     LAMPORTS_PER_SOL
   );
-  const lamportsToSend = 1_000_000;
+
+  logSolAccount(fromKeypair.publicKey, "devnet")
+
+  await new Promise(resolve => setTimeout(resolve, 10000));
+
+  airdropSignature = await connection.requestAirdrop(
+    toKeypair.publicKey,
+    LAMPORTS_PER_SOL
+  );
+
+  balance = await connection.getBalance(toKeypair.publicKey);
+
+  logSolAccount(toKeypair.publicKey, "devnet")
+
+  const lamportsToSend = 1000000;
 
   const transferTransaction = new Transaction().add(
     SystemProgram.transfer({
@@ -86,10 +118,18 @@ async function donateSol()
     })
   );
 
-  await sendAndConfirmTransaction(connection, transferTransaction, [
+  const result = await sendAndConfirmTransaction(connection, transferTransaction, [
     fromKeypair,
   ]);
+
+  logSolTx(result, "devnet");
 }
 
 
-   
+function logSolTx(id,cluster) {
+  console.log("https://explorer.solana.com/tx/" + id + "?cluster=" + cluster);
+}
+
+function logSolAccount(id,cluster) {
+  console.log("https://explorer.solana.com/address/" + id + "?cluster=" + cluster)
+}
