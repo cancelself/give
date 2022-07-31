@@ -19,6 +19,10 @@ const rl = read.createInterface({
         testSol();
         break;
 
+        case "!sol":
+          donateSol();
+          break;
+
         case("=gd"):
           gd_balance();
           break;
@@ -44,6 +48,7 @@ const rl = read.createInterface({
     console.log(giveDirectly + ":" + balance)
 
   }
+
 
 async function donateXRP()
 {
@@ -125,6 +130,46 @@ async function testSol()
   logSolTx(result, "devnet");
 }
 
+async function donateSol()
+{
+  const {sendAndConfirmTransaction, clusterApiUrl, Connection, Keypair, Transaction, SystemProgram, LAMPORTS_PER_SOL} = require("@solana/web3.js");
+  
+  const fromSecretKey = Uint8Array.from( )
+  const fromKeypair = Keypair.fromSecretKey(fromSecretKey)
+  const toKeypair = Keypair.generate();
+
+  let connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
+
+  logSolAccount(fromKeypair.publicKey, "devnet")
+
+//  await new Promise(resolve => setTimeout(resolve, 10000));
+
+  airdropSignature = await connection.requestAirdrop(
+    toKeypair.publicKey,
+    LAMPORTS_PER_SOL
+  );
+
+  balance = await connection.getBalance(toKeypair.publicKey);
+
+  logSolAccount(toKeypair.publicKey, "devnet")
+
+  const lamportsToSend = 1000000;
+
+  const transferTransaction = new Transaction().add(
+    SystemProgram.transfer({
+      fromPubkey: fromKeypair.publicKey,
+      toPubkey: toKeypair.publicKey,
+      lamports: lamportsToSend,
+    })
+  );
+
+  const result = await sendAndConfirmTransaction(connection, transferTransaction, [
+    fromKeypair,
+  ]);
+
+  logSolTx(result, "devnet");
+}
+
 
 function logSolTx(id,cluster) {
   console.log("https://explorer.solana.com/tx/" + id + "?cluster=" + cluster);
@@ -132,4 +177,4 @@ function logSolTx(id,cluster) {
 
 function logSolAccount(id,cluster) {
   console.log("https://explorer.solana.com/address/" + id + "?cluster=" + cluster)
-}
+}`
